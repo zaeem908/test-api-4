@@ -2,6 +2,7 @@ const {Client} = require('pg');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken')
 const sgMail = require('@sendgrid/mail')
+let loggedIn = false;
   sgMail.setApiKey('123')
    
 const client = new Client({
@@ -37,6 +38,8 @@ function validPassword(password) {
 const logIn = async (request, response) => {
    try {
       const {email,password} = request.body
+      const token = jwt.sign({email:email,password:password},'secretkey')
+
 
       const result = await client.query(`SELECT email,password FROM users3 WHERE email = $1`,[email]);
       const user = result.rows[0]
@@ -53,8 +56,8 @@ const logIn = async (request, response) => {
      if(user) {
         const passwordMatch = await bcrypt.compare(password,user.password) 
         if(passwordMatch) {
-          const token = jwt.sign({email:email,password:password},'secretkey')
          response.send(token)
+         loggedIn = true;
          console.log('login succesful')
        }else{
         console.log('password not matched')
@@ -67,7 +70,8 @@ const logIn = async (request, response) => {
   };  
 
 
-  const resetPassword = async (request,response) => {
+
+  const forgotPassword = async (request,response) => {
   try{
     const {email} = request.body
     if(!validEmail(email)) {
@@ -87,11 +91,49 @@ const logIn = async (request, response) => {
     console.log(err)
     response.status(500).send('no such email in database')
   }
+  };
+
+  const addSubject = async (request,response) => {
+    try{
+      const {subject} = request.body
+      if(loggedIn) {
+        client.query(`INSERT INTO subjects2 (subject) VALUES ($1)`,[subject])
+        response.send(`${subject} added to subjects`)
+      }
+      if(!loggedIn) {
+        response.send('user not logged in!')
+      }
+
+    }catch(err) {
+      console.log(err)
+      response.status(500).send('internal sever error')
+    }
   }
 
+ 
+// const resetPassword = async (request,response) => {
+//   try{
+//      const {reqToken,password} = request.body
+//     const verified = jwt.verify(reqToken,'secretkey')
+//     const email = verified.email
+//     if(verified) {
+//       client.query(`UPDATE users3 SET password = $2 WHERE email = ${email}`,[reqToken,password])
+//       response.send('password updated succesfully')
+//     }
+//     if(!verified) {
+//       response.send('user not valid')
+//     }
+
+//   }catch(err){
+//     console.log(err)
+//     response.status(500).send('server error')
+//   }
+// }
  
 
   module.exports= {
     logIn,
-    resetPassword
+    forgotPassword,
+    addSubject
+   // resetPassword
   };
