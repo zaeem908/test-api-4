@@ -110,30 +110,9 @@ const logIn = async (request, response) => {
     }
   }
 
- 
-// const resetPassword = async (request,response) => {
-//   try{
-//      const {reqToken,password} = request.body
-//     const verified = jwt.verify(reqToken,'secretkey')
-//     const email = verified.email
-//     if(verified) {
-//       client.query(`UPDATE users3 SET password = $2 WHERE email = ${email}`,[reqToken,password])
-//       response.send('password updated succesfully')
-//     }
-//     if(!verified) {
-//       response.send('user not valid')
-//     }
-
-//   }catch(err){
-//     console.log(err)
-//     response.status(500).send('server error')
-//   }
-// }
- 
 
   module.exports= {
     logIn,
     forgotPassword,
     addSubject
-   // resetPassword
   };

@@ -12,6 +12,5 @@ fastify.get('/',(req,res) => {
 fastify.post('/login',db.logIn) 
 fastify.post('/resetpassword',db.forgotPassword)
 fastify.post('/addsubject',db.addSubject)
-//fastify.put('/updatepassword',db.forgotPassword)
 
 fastify.listen(3000)   
