@@ -2,9 +2,8 @@ const {Client} = require('pg');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken')
 const sgMail = require('@sendgrid/mail')
-let userToken ;
-  sgMail.setApiKey('123')
-   
+  sgMail.setApiKey('123') 
+    
 const client = new Client({
     user:"postgres",
     host:"127.0.0.1",
@@ -60,9 +59,7 @@ const logIn = async (request, response) => {
      if(user) {
         const passwordMatch = await bcrypt.compare(password,user.password) 
         if(passwordMatch) {
-         userToken = createToken(email)
-         response.send(userToken)
-         loggedIn = true;
+         response.send(createToken(email))
          console.log('login succesful') 
        }else{
         console.log('password not matched')
